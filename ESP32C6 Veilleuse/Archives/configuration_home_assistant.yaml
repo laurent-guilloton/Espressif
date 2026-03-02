@@ -1,0 +1,68 @@
+# Configuration Home Assistant pour le capteur SHT31 via Zigbee
+# Ajoutez ce code à votre configuration.yaml
+
+# Configuration Zigbee2MQTT ou Zigbee Home Assistant
+zigbee:
+  # Permit join permet d'ajouter de nouveaux appareils
+  permit_join: true
+  
+  # Configuration réseau
+  network:
+    # Canal Zigbee (doit correspondre à celui configuré dans l'ESP32)
+    channel: 11
+    # Clé réseau (générée automatiquement)
+    network_key: GENERATE
+    
+  # Configuration des appareils
+  device_config:
+    # Configuration pour le capteur de température SHT31
+    "0x00124b0012345678":  # Remplacez par l'adresse réelle de votre appareil
+      friendly_name: "Capteur SHT31 Salon"
+      retain: true
+      optimistic: false
+
+# Configuration des capteurs
+sensor:
+  # Capteur de température via Zigbee
+  - platform: mqtt
+    name: "Température Salon"
+    state_topic: "zigbee2mqtt/Capteur SHT31 Salon/temperature"
+    unit_of_measurement: "°C"
+    device_class: "temperature"
+    value_template: "{{ value | float / 100 }}"
+    
+  # Capteur d'humidité via Zigbee  
+  - platform: mqtt
+    name: "Humidité Salon"
+    state_topic: "zigbee2mqtt/Capteur SHT31 Salon/humidity"
+    unit_of_measurement: "%"
+    device_class: "humidity"
+    value_template: "{{ value | float / 100 }}"
+
+# Configuration MQTT (si vous utilisez Zigbee2MQTT)
+mqtt:
+  broker: "localhost"  # ou l'adresse de votre broker MQTT
+  port: 1883
+  client_id: home_assistant
+  username: !secret mqtt_username
+  password: !secret mqtt_password
+
+# Automatisation pour la mise à jour des capteurs
+automation:
+  - alias: "Mise à jour capteur SHT31"
+    trigger:
+      - platform: mqtt
+        topic: "zigbee2mqtt/Capteur SHT31 Salon"
+    action:
+      - service: mqtt.publish
+        data:
+          topic: "zigbee2mqtt/Capteur SHT31 Salon/get"
+          payload: '{"temperature": "", "humidity": ""}'
+
+# Groupes pour organiser les capteurs
+group:
+  capteurs_salon:
+    name: "Capteurs Salon"
+    entities:
+      - sensor.temperature_salon
+      - sensor.humidity_salon

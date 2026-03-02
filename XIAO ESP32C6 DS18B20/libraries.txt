@@ -1,0 +1,33 @@
+Bibliothèques requises pour ce projet:
+
+1. OneWire - Communication avec le capteur DS18B20
+   - Auteur: Jim Studt
+   - Version: 2.3.7 ou plus récente
+   
+2. DallasTemperature - Interface simplifiée pour les capteurs de température Dallas
+   - Auteur: Miles Burton
+   - Version: 3.9.0 ou plus récente
+
+3. Zigbee - Bibliothèque principale pour la communication Zigbee
+   - Auteur: Various (bibliothèque communautaire)
+   - Version: 1.0.0 ou plus récente
+   
+4. ZigbeeHA - Extension pour les devices Home Automation
+   - Auteur: Various (bibliothèque communautaire)
+   - Version: 1.0.0 ou plus récente
+
+Installation via le gestionnaire de bibliothèques Arduino:
+1. Ouvrir l'IDE Arduino
+2. Aller dans Outils > Gérer les bibliothèques...
+3. Rechercher "OneWire" et installer la bibliothèque de Jim Studt
+4. Rechercher "DallasTemperature" et installer la bibliothèque de Miles Burton
+5. Rechercher "Zigbee" et installer la bibliothèque appropriée pour ESP32
+6. Rechercher "ZigbeeHA" et installer l'extension Home Automation
+
+Ou installation manuelle:
+- Télécharger depuis GitHub et placer dans le dossier libraries de Arduino
+- Bibliothèques recommandées: 
+  * https://github.com/espressif/esp-zigbee-sdk (pour ESP32)
+  * https://github.com/Koenkk/Zigbee2MQTT (référence)
+
+Note: Assurez-vous que les bibliothèques Zigbee sont compatibles avec l'ESP32-C6

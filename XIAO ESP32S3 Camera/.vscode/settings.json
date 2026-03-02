@@ -1,0 +1,36 @@
+{
+  "// Configuration automatique du proxy": "Ce fichier est géré par detect-network.ps1",
+  "// Pour modifier la configuration manuelle": "Éditez detect-network.ps1 et relancez la détection",
+  
+  "// Configuration réseau": "Détection automatique ESISAR",
+  "[detection-timestamp]": "",
+  "[on-esisar-network]": false,
+  
+  "// === CONFIGURATION PROXY ===": "À utiliser sur réseau ESISAR",
+  "http.proxy": "",
+  "http.proxyStrictSSL": true,
+  "http.proxyAuthorization": null,
+  "https.proxy": "",
+  "http.nonProxyHosts": "localhost,127.0.0.1,*.local,*.intra",
+  
+  "// === CONFIGURATION VS CODE GÉNÉRALE ===": "Paramètres recommandés pour ESISAR",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python"
+  },
+  "[cpp]": {
+    "editor.defaultFormatter": "ms-vscode.cpptools"
+  },
+  
+  "// === EXTENSIONS VS CODE ===": "À installer pour meilleur support",
+  "extensions.recommendations": [
+    "esbenp.prettier-vscode",
+    "ms-python.python",
+    "ms-vscode.cpptools",
+    "platformio.platformio-ide"
+  ]
+}

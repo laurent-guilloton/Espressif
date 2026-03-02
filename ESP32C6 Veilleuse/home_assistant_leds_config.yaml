@@ -1,0 +1,191 @@
+# Configuration Home Assistant pour le contrôle des LEDs WS2812B via Zigbee
+# Ajoutez ce code à votre configuration.yaml
+
+# Configuration Zigbee pour inclure le contrôle des LEDs
+zigbee:
+  # Permit join permet d'ajouter de nouveaux appareils
+  permit_join: true
+  
+  # Configuration réseau
+  network:
+    # Canal Zigbee (doit correspondre à celui configuré dans l'ESP32)
+    channel: 11
+    # Clé réseau (générée automatiquement)
+    network_key: GENERATE
+    
+  # Configuration des appareils
+  device_config:
+    # Configuration pour le capteur SHT31 avec LEDs
+    "0x00124b0012345678":  # Remplacez par l'adresse réelle de votre appareil
+      friendly_name: "Capteur SHT31 avec LEDs"
+      retain: true
+      optimistic: false
+
+# Configuration des capteurs
+sensor:
+  # Capteur de température via Zigbee
+  - platform: mqtt
+    name: "Température Salon"
+    state_topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/temperature"
+    unit_of_measurement: "°C"
+    device_class: "temperature"
+    value_template: "{{ value | float / 100 }}"
+    
+  # Capteur d'humidité via Zigbee  
+  - platform: mqtt
+    name: "Humidité Salon"
+    state_topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/humidity"
+    unit_of_measurement: "%"
+    device_class: "humidity"
+    value_template: "{{ value | float / 100 }}"
+
+# Configuration des lumières (LEDs)
+light:
+  # Lumière RGB pour le ruban LED WS2812B
+  - platform: mqtt
+    name: "Ruban LED Salon"
+    state_topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/light"
+    command_topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/light/set"
+    rgb_command_topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/light/rgb/set"
+    rgb_state_topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/light/rgb"
+    brightness_command_topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/light/brightness/set"
+    brightness_state_topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/light/brightness"
+    brightness_scale: 255
+    rgb_value_template: "{{ value_json.r | int }},{{ value_json.g | int }},{{ value_json.b | int }}"
+    color_temp_command_topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/light/color_temp/set"
+    color_temp_state_topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/light/color_temp"
+    color_temp_value_template: "{{ value_json.color_temp }}"
+    on_command_type: "brightness"  # on/off, brightness, color_temp
+    qos: 0
+    payload_on: "ON"
+    payload_off: "OFF"
+    optimistic: false
+    retain: false
+
+# Configuration des sélecteurs de mode LED
+input_select:
+  led_mode_salon:
+    name: "Mode Ruban LED Salon"
+    options:
+      - "Éteint"
+      - "Couleur fixe"
+      - "Arc-en-ciel"
+      - "Température"
+      - "Humidité"
+      - "Respiration"
+      - "Clignotement"
+      - "Poursuite"
+    initial: "Éteint"
+    icon: mdi:led-strip-variant
+
+# Configuration des scripts pour les modes LED
+script:
+  led_mode_off:
+    alias: "Éteindre les LEDs"
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/led_mode/set"
+          payload: "0"
+          
+  led_mode_solid:
+    alias: "Mode couleur fixe"
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/led_mode/set"
+          payload: "1"
+          
+  led_mode_rainbow:
+    alias: "Mode arc-en-ciel"
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/led_mode/set"
+          payload: "2"
+          
+  led_mode_temperature:
+    alias: "Mode température"
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/led_mode/set"
+          payload: "3"
+          
+  led_mode_humidity:
+    alias: "Mode humidité"
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/led_mode/set"
+          payload: "4"
+          
+  led_mode_breathing:
+    alias: "Mode respiration"
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/led_mode/set"
+          payload: "5"
+          
+  led_mode_flash:
+    alias: "Mode clignotement"
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/led_mode/set"
+          payload: "6"
+          
+  led_mode_chase:
+    alias: "Mode poursuite"
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: "zigbee2mqtt/Capteur SHT31 avec LEDs/led_mode/set"
+          payload: "7"
+
+# Automatisation pour le changement de mode LED
+automation:
+  - alias: "Changement mode LED via selecteur"
+    trigger:
+      - platform: state
+        entity_id: input_select.led_mode_salon
+    action:
+      - service: script.turn_on
+        target:
+          entity_id: >
+            {% if states('input_select.led_mode_salon').state == 'Éteint' %} script.led_mode_off
+            {% elif states('input_select.led_mode_salon').state == 'Couleur fixe' %} script.led_mode_solid
+            {% elif states('input_select.led_mode_salon').state == 'Arc-en-ciel' %} script.led_mode_rainbow
+            {% elif states('input_select.led_mode_salon').state == 'Température' %} script.led_mode_temperature
+            {% elif states('input_select.led_mode_salon').state == 'Humidité' %} script.led_mode_humidity
+            {% elif states('input_select.led_mode_salon').state == 'Respiration' %} script.led_mode_breathing
+            {% elif states('input_select.led_mode_salon').state == 'Clignotement' %} script.led_mode_flash
+            {% elif states('input_select.led_mode_salon').state == 'Poursuite' %} script.led_mode_chase
+            {% endif %}
+
+# Groupes pour organiser les entités
+group:
+  capteurs_salon:
+    name: "Capteurs Salon"
+    entities:
+      - sensor.temperature_salon
+      - sensor.humidity_salon
+      
+  eclairage_salon:
+    name: "Éclairage Salon"
+    entities:
+      - light.ruban_led_salon
+      - input_select.led_mode_salon
+
+# Configuration du dashboard Lovelace (à ajouter dans votre UI)
+# Vous pouvez créer des cartes manuelles ou utiliser cette configuration
+
+# Exemple de carte pour le contrôle des LEDs
+# type: entities
+# title: Contrôle Ruban LED
+# entities:
+#   - light.ruban_led_salon
+#   - input_select.led_mode_salon
+#   - entity: input_number.led_brightness_salon
+#     name: Luminosité

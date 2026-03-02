@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "Arduino",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:/Users/guillotl/Documents/Arduino/libraries/**",
+                "C:/Users/guillotl/AppData/Local/Arduino15/packages/esp32/hardware/esp32/2.0.11/**",
+                "C:/Users/guillotl/AppData/Local/Arduino15/packages/esp32/tools/**",
+                "C:/Users/guillotl/AppData/Local/Arduino15/libraries/**",
+                "C:/Program Files (x86)/Arduino/libraries/**",
+                "C:/Program Files/Arduino/libraries/**"
+            ],
+            "forcedInclude": [],
+            "defines": [
+                "ARDUINO=10600",
+                "ARDUINO_ESP32C6_DEV",
+                "ARDUINO_ARCH_ESP32",
+                "ESP32"
+            ],
+            "intelliSenseMode": "windows-gcc-x64",
+            "cStandard": "c17",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

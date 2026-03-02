@@ -1,0 +1,15 @@
+# Bibliothèques Arduino requises pour le projet XIAO ESP32-C6 SHT31 + WS2812B
+
+# Capteur SHT31
+Adafruit SHT31 Library>=2.2.0
+
+# Ruban LED WS2812B
+Adafruit NeoPixel>=1.11.0
+
+# Communication Zigbee (ESP32-C6)
+Zigbee>=1.0.0
+ZigbeeHA>=1.0.0
+
+# Dépendances automatiques
+Adafruit Unified Sensor>=1.1.9
+Wire>=1.0.0
